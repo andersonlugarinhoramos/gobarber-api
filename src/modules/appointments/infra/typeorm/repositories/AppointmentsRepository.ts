@@ -1,4 +1,10 @@
-import { getRepository, Repository, Raw } from 'typeorm';
+import {
+  getRepository,
+  Repository,
+  Raw,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+} from 'typeorm';
 
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
@@ -14,9 +20,16 @@ class AppointmentsRepository implements IAppointmentsRepository {
     this.ormRepository = getRepository(Appointment);
   }
 
-  public async findByDate(date: Date, provider_id: string): Promise<Appointment | undefined> {
+  public async findByDate(
+    date: Date,
+    provider_id: string,
+  ): Promise<Appointment | undefined> {
     const findAppointment = await this.ormRepository.findOne({
-      where: { date, provider_id },
+      where: {
+        provider_id,
+        date: LessThanOrEqual(date),
+        duration: MoreThanOrEqual(date),
+      },
     });
 
     return findAppointment;
@@ -69,11 +82,17 @@ class AppointmentsRepository implements IAppointmentsRepository {
     provider_id,
     user_id,
     date,
+    price,
+    service_id,
+    duration,
   }: ICreateAppointmentDTO): Promise<Appointment> {
     const appointment = this.ormRepository.create({
       provider_id,
       user_id,
       date,
+      price,
+      service_id,
+      duration,
     });
 
     await this.ormRepository.save(appointment);

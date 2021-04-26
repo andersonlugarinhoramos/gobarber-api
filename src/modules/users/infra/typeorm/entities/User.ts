@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 
 import uploadConfig from '@config/upload';
-
 import { Exclude, Expose } from 'class-transformer';
 
 @Entity('users')
@@ -27,6 +26,9 @@ class User {
 
   @Column()
   avatar: string;
+
+  @Column()
+  provider: boolean;
 
   @CreateDateColumn()
   created_at: Date;
